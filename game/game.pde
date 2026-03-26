@@ -97,12 +97,12 @@ public class Snake
 
   public void ChangeDirection(Direction _dir)
   {
+    if (dir == _dir) return;
     if (dir == Direction.UP && _dir == Direction.DOWN) return;
     if (dir == Direction.DOWN && _dir == Direction.UP) return;
     if (dir == Direction.LEFT && _dir == Direction.RIGHT) return;
     if (dir == Direction.RIGHT && _dir == Direction.LEFT) return;
-    if (dir == _dir) return;
-
+    
     dir = _dir;
 
     currentTimer = loopTime;
@@ -116,9 +116,12 @@ public class Snake
     {
       PVector pos = new PVector(bodyPositions.get(bodyPositions.size() - 1).x, bodyPositions.get(bodyPositions.size() - 1).y);
       
-      if (dir
+      if (dir == Direction.UP) pos.y -= 1;
+      else if (dir == Direction.DOWN) pos.y += 1;
+      else if (dir == Direction.RIGHT) pos.x -= 1;
+      else if (dir == Direction.LEFT) pos.x += 1;
       
-      bodyPositions.add(pos)
+      bodyPositions.add(pos);
     }
   }
 }
@@ -224,6 +227,11 @@ void keyPressed()
         snake.ChangeDirection(Direction.LEFT);
       }
       canChangeDir = false;
+    }
+    
+    if (keyCode == SPACE)
+    {
+      
     }
   }
 
