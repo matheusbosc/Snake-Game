@@ -101,10 +101,25 @@ public class Snake
     if (dir == Direction.DOWN && _dir == Direction.UP) return;
     if (dir == Direction.LEFT && _dir == Direction.RIGHT) return;
     if (dir == Direction.RIGHT && _dir == Direction.LEFT) return;
+    if (dir == _dir) return;
 
     dir = _dir;
 
     currentTimer = loopTime;
+  }
+  
+  public void Grow(int amount)
+  {
+    if (amount <= 0) return;
+    
+    for (int i = 0; i < amount; i++)
+    {
+      PVector pos = new PVector(bodyPositions.get(bodyPositions.size() - 1).x, bodyPositions.get(bodyPositions.size() - 1).y);
+      
+      if (dir
+      
+      bodyPositions.add(pos)
+    }
   }
 }
 
