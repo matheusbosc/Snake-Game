@@ -4,7 +4,7 @@
 // - Make snake grow
 // - Add UI
 
-
+import java.util.ArrayList;
 
 // CLASSES
 
@@ -61,6 +61,9 @@ public class Snake
   public Grid gameGrid;
 
   public Direction dir;
+  
+  public ArrayList<PVector> bodyPositions = new ArrayList<PVector>();
+  private int defaultLength = 3;
 
   // Game Loop
   public float loopTime = 0.25f;
@@ -72,14 +75,24 @@ public class Snake
   {
     gameGrid = _gameGrid;
     position = _position;
+    
+    for (int i = defaultLength - 1; i >= 0; i--)
+    {
+      PVector temp = new PVector(position.x, position.y - i);
+      bodyPositions.add(temp);
+    }
 
-    dir = Direction.RIGHT;
+    dir = Direction.DOWN;
   }
 
   public void Move(int x, int y)
   {
-    position.x += x;
-    position.y += y;
+    PVector pos = new PVector(bodyPositions.get(bodyPositions.size() - 1).x, bodyPositions.get(bodyPositions.size() - 1).y);
+    pos.x += x;
+    pos.y += y;
+    
+    bodyPositions.remove(0);
+    bodyPositions.add(pos);
   }
 
   public void ChangeDirection(Direction _dir)
@@ -158,11 +171,14 @@ void draw()
   }
 
 
-  PVector pos = gameGrid.getRealSquarePosition((int)snake.position.x, (int)snake.position.y);
-  if (pos != null)
+  for (int i = 0; i < snake.bodyPositions.size(); i++)
   {
-    fill(#f61313);
-    rect(pos.x, pos.y, 25, 25);
+    PVector pos = gameGrid.getRealSquarePosition((int)snake.bodyPositions.get(i).x, (int)snake.bodyPositions.get(i).y);
+    if (pos != null)
+    {
+      fill(#f61313);
+      rect(pos.x, pos.y, 25, 25);
+    }
   }
 
   lastTime = millis(); // Save the time at the end of the loop
@@ -222,4 +238,3 @@ void keyReleased()
 {
   canChangeDir = true;
 }
-
