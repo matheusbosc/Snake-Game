@@ -110,7 +110,7 @@ public class Snake
 
 // VARIABLES
 
-boolean drawGrid = false;
+boolean drawGrid = true;
 
 boolean canChangeDir = true;
 
@@ -146,13 +146,15 @@ void draw()
     for (int i = 0; i <= 28; i++)
     {
       // Columns (vertical)
-      strokeWeight(1);
+      strokeWeight(4);
+      stroke(#716841);
       line(50 + (25*i), 50, 50 + (25*i), 750);
     }
     for (int i = 0; i <= 28; i++)
     {
       // Rows (horizontal)
-      strokeWeight(1);
+      strokeWeight(4);
+      stroke(#716841);
       line(50, 50 + (25*i), 750, 50 + (25*i));
     }
   }
