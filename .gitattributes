@@ -1,2 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+linux-amd64/java/jmods/java.base.jmod filter=lfs diff=lfs merge=lfs -text
+linux-amd64/java/lib/modules filter=lfs diff=lfs merge=lfs -text
