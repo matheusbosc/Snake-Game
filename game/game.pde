@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import processing.sound.*;
 
 // CLASSES
 
@@ -146,6 +147,8 @@ public class Snake
       position.add(new PVector(dir == Direction.RIGHT ? 1 : dir == Direction.LEFT ? -1 : 0, dir == Direction.DOWN ? 1 : dir == Direction.UP ? -1 : 0));
 
       currentTimer = 0;
+      
+      grow.play();
     }
   }
 
@@ -168,16 +171,20 @@ public class Snake
 boolean drawGrid = false;
 boolean sprint = false;
 boolean canChangeDir = true;
+boolean deathSoundPlayed = false;
 
 
 double deltaTime, lastTime;
 
+float deathTimer = 0f;
 
 int rows = 14;
 int columns = 14;
 int cellSizeX = 700 / columns;
 
 int highScore = 0;
+
+SoundFile walk, grow, click, die;
 
 
 // Grid(rows, columns, tileSize, startingPixelPositionX, startingPixelPositionY);
@@ -194,6 +201,11 @@ void setup()
 {
   size(800, 900);
   frameRate(60);
+  
+  walk = new SoundFile(this, "blipSelect.wav");
+  grow = new SoundFile(this, "powerUp.wav");
+  click = new SoundFile(this, "click.wav");
+  die = new SoundFile(this, "explosion.wav");
   
   setup_game(14,14);
 }
@@ -215,6 +227,10 @@ void setup_game(int _rows, int _columns)
   }
 
   snake.loopEnabled = true;
+  
+  deathSoundPlayed = false;
+  
+  
 }
 
 void draw()
@@ -252,6 +268,8 @@ void draw()
   if (snake.loopEnabled)
   {
     snake.currentTimer += deltaTime;
+    
+    
 
     if (snake.currentTimer >= (sprint ? snake.loopTime / 4 : snake.loopTime))
     {
@@ -282,7 +300,16 @@ void draw()
 
 
   for (int i = 0; i < snake.bodyPositions.size(); i++)
-  {
+  { 
+    if (i != snake.bodyPositions.size() - 1)
+    {
+      if (snake.bodyPositions.get(snake.bodyPositions.size() - 1).x == snake.bodyPositions.get(i).x && snake.bodyPositions.get(snake.bodyPositions.size() - 1).y == snake.bodyPositions.get(i).y)
+      {
+        die();
+      }
+    }
+    print("\n\n");
+    
     PVector pos = gameGrid.getRealSquarePosition((int)snake.bodyPositions.get(i).x, (int)snake.bodyPositions.get(i).y);
     if (pos != null)
     {
@@ -295,15 +322,10 @@ void draw()
       fill(r, g, b);
       rect(pos.x, pos.y, cellSizeX, cellSizeX);
     } else {
-      snake.loopEnabled = false;
-      snake.dead = true;
-
-      int score = snake.bodyPositions.size() - 3;
-      if (score > highScore)
-      {
-        highScore = score;
-      }
+      die();
     }
+    
+    
   }
 
   // Draw Fruits
@@ -337,22 +359,46 @@ void draw()
   lastTime = millis(); // Save the time at the end of the loop
 }
 
+void die()
+{
+  snake.loopEnabled = false;
+      snake.dead = true;
+
+      int score = snake.bodyPositions.size() - 3;
+      if (score > highScore)
+      {
+        highScore = score;
+      }
+      
+      if (!deathSoundPlayed)
+      {
+        die.play();
+        deathSoundPlayed = true;
+      }
+}
+
 void mouseClicked()
 {
   // Normal Map Button
   if (mouseX > 400 & mouseX < 550 && mouseY > 845 && mouseY < 885)
   {
+    fruitAmount = 3;
     setup_game(14,14);
     rows = 14;
     columns = 14;
+    
+    click.play();
   }
 
   // Large Map Button
   if (mouseX > 575 & mouseX < 725 && mouseY > 845 && mouseY < 885)
   {
+    fruitAmount = 6;
     setup_game(28,28);
     rows = 28;
     columns = 28;
+    
+    click.play();
   }
 
   print (mouseX + ", " + mouseY);
@@ -367,20 +413,24 @@ void keyPressed()
       if (keyCode == UP)
       {
         snake.ChangeDirection(Direction.UP);
+        walk.play();
       }
       if (keyCode == DOWN)
       {
         snake.ChangeDirection(Direction.DOWN);
+        walk.play();
       }
       if (keyCode == RIGHT)
       {
         snake.ChangeDirection(Direction.RIGHT);
+        walk.play();
       }
       if (keyCode == LEFT)
       {
         snake.ChangeDirection(Direction.LEFT);
+        walk.play();
       }
-      canChangeDir = false;
+      
     }
 
     if (keyCode == SHIFT)
@@ -396,24 +446,29 @@ void keyPressed()
     if (key == 'w')
     {
       snake.ChangeDirection(Direction.UP);
+      walk.play();
     }
     if (key == 's')
     {
       snake.ChangeDirection(Direction.DOWN);
+      walk.play();
     }
     if (key == 'd')
     {
       snake.ChangeDirection(Direction.RIGHT);
+      walk.play();
     }
     if (key == 'a')
     {
       snake.ChangeDirection(Direction.LEFT);
+      walk.play();
     }
-    canChangeDir = false;
   }
 
   if (key == ' ')
   {
+    click.play();
+    
     if (snake.loopEnabled)
     {
       snake.loopEnabled = false;
@@ -432,8 +487,6 @@ void keyPressed()
 
 void keyReleased()
 {
-  canChangeDir = true;
-
   if (key == CODED)
   {
     if (keyCode == SHIFT)
