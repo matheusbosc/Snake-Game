@@ -235,7 +235,7 @@ void setup_game(int _rows, int _columns)
 
 void draw()
 {
-  background(#719d58);
+  background(#5EA030);
 
   deltaTime = (millis() - lastTime) / 1000;  // Calculate delta time (time since last frame)
 
